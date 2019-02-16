@@ -1,0 +1,17 @@
+[BEGINVDF]
+Comment=Modified versions of the latest Ikarus and LeGo.%%NThese scripts are not loaded by default - only if a patch needs them.%%N%%N===       DO NOT USE THESE SCRIPTS       ===%%N=== They are specifically tailored to Ninja ===
+VDFName=.\iklg.data
+
+[FILES]
+Ninja\_intern\Ikarus\* -r
+Ninja\_intern\LeGo\* -r
+
+[EXCLUDE]
+_work\Data\Scripts\* -r
+*.vm
+*.vdf
+*.bat
+
+[INCLUDE]
+
+[ENDVDF]
