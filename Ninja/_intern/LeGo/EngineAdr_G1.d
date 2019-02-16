@@ -1,3 +1,10 @@
+/*
+ * This version of LeGo is specific to Ninja. Do not use it otherwise.
+ * Find the latest LeGo version at https://github.com/Lehona/LeGo
+ */
+const int Do_Not_Use_This_LeGo_Version_Outside_Ninja = 0;
+const int Do_Not_Use_This_LeGo_Version_Outside_Ninja = 0;
+
 /***********************************\
        ADRESSEN DER ENGINECALLS
 \***********************************/
@@ -144,6 +151,7 @@ const int ITEM_ACTIVE_LEGO = 1 << 30; // Not defined in Gothic 1. Necessary for 
 // Globale Flagvariable
 //========================================
 const int _LeGo_Flags = 0;
+const int _LeGo_Flags_Base = 0;
 
 //========================================
 // Namen einer Textur holen

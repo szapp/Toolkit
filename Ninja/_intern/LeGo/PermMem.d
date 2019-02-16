@@ -1066,6 +1066,15 @@ func void _PM_WriteSaveStruct() {
 
 var int PM_HandleList;
 func void _PM_Archive_HTSub(var int key, var int val) {
+
+    // Ninja: Skip certain handles
+    MEM_PushIntParam(key);
+    MEM_PushIntParam(val);
+    MEM_Call(_PM_SkipHandle);
+    if (MEM_PopIntResult()) {
+        return;
+    };
+
 	if (!PM_HandleList) {
 		/* PM_HandleList = List_Create(key); */
 		key;

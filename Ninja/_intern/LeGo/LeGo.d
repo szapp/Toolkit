@@ -12,8 +12,10 @@
 |*                  Erweitertes Scriptpaket, aufbauend                   *|
 |*                              auf Ikarus                               *|
 |*                                                                       *|
+|*                         NINJA SPECIFIC VERSION                        *|
+|*                                                                       *|
 \*************************************************************************/
-const string LeGo_Version = "LeGo 2.5.1";
+const string LeGo_Version = "LeGo 2.5.1-N001"; // Ninja: DO NOT CHANGE!
 
 const int LeGo_PrintS          = 1<<0;  // Interface.d
 const int LeGo_HookEngine      = 1<<1;  // HookEngine.d
@@ -275,4 +277,49 @@ func void LeGo_Init(var int flags) {
     };
 
     MEM_Info(ConcatStrings(LeGo_Version, " wurde erfolgreich initialisiert."));
+
+    // Keep a copy of the flags initialized by the mod
+    _LeGo_Flags_Base = _LeGo_Flags;
+};
+
+//========================================
+// Merge flags after prior initialization
+//========================================
+func int LeGo_MergeFlags(var int flags, var int legoInit, var int initialized, var int loaded) {
+    // Check if LeGo is already used and initialized by the underlying mod
+    if (legoInit == -1) {
+        legoInit = _LeGo_Init; // Yes/No
+    };
+
+    // Only perform the merging of flags if LeGo is initialized by the underlying mod
+    if (legoInit) {
+        // Already initialized packages
+        var int currentFlags; currentFlags = _LeGo_Flags;
+
+        // Find necessary packages that have not been initialized yet
+        LeGo_InitFlags(flags); // Sets _LeGo_Flags
+        _LeGo_Flags = _LeGo_Flags & ~currentFlags;
+
+        // Reset the loading indicator
+        _LeGo_Loaded = loaded;
+
+        // Re-initialize LeGo, but only with the remaining flags (so that nothing is done twice)
+        MEM_Info(ConcatStrings("Merging LeGo flags: ", LeGo_FlagsHR(_LeGo_Flags)));
+        if (!initialized) {
+            LeGo_InitGamestart(_LeGo_Flags);
+        };
+        LeGo_InitAlways(_LeGo_Flags);
+
+        _LeGo_Loaded = 1;
+
+        // Finally update _LeGo_Flags for any following merges
+        LeGo_InitFlags(currentFlags | flags);
+    } else {
+        // Otherwise (LeGo is not used by the underlying mod), initialize it here
+        LeGo_Init(flags);
+        _LeGo_Flags_Base = 0; // No LeGo flags are set by the mod
+    };
+
+    // Return updated indicator
+    return legoInit;
 };

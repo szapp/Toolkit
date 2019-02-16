@@ -101,6 +101,14 @@ class callbackData {
 instance callbackData@(callbackData);
 
 func void callbackData_Archiver(var callbackData this) {
+	// Ninja: Consider mods that use older LeGo versions - they expect the old archiving!
+	if (MEM_GetSymbolIndex("LEGO_INIT") < MEM_GetSymbolIndex("CALLBACKDATA_ARCHIVER")) {
+		PM_SaveInt("funcID",   this.funcID);
+		PM_SaveInt("userData", this.userData);
+		PM_SaveInt("hasData",  this.hasData);
+		return;
+	};
+
 	PM_SaveFuncID("func", this.funcID);
 	PM_SaveInt("userData", this.userData);
 	PM_SaveInt("hasData", this.hasData);

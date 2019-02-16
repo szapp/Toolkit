@@ -1,10 +1,17 @@
+/*
+ * This version of LeGo is specific to Ninja. Do not use it otherwise.
+ * Find the latest LeGo version at https://github.com/Lehona/LeGo
+ */
+const int Do_Not_Use_This_LeGo_Version_Outside_Ninja = 0;
+const int Do_Not_Use_This_LeGo_Version_Outside_Ninja = 0;
+
 /***********************************\
        ADRESSEN DER ENGINECALLS
 \***********************************/
 //========================================
 // Talents Aivar field
 //========================================
-const int AIV_TALENT_INDEX = 89;
+const int AIV_TALENT_INDEX = 99;
 //========================================
 // Alle (?) genutzen Engineadressen
 //========================================
@@ -120,6 +127,7 @@ const int zcon_address_lego							= 11221088; //0xAB3860 //zcon_address is defin
 // Globale Flagvariable
 //========================================
 const int _LeGo_Flags = 0;
+const int _LeGo_Flags_Base = 0;
 
 //========================================
 // Missing Item flag

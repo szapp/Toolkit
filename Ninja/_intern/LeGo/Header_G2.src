@@ -37,6 +37,7 @@ Focusnames.d
 Gamestate.d
 Render.d
 Draw3D.d
+PermMem_SkipHandles.d
 Saves.d
 Int64.d
 Sprite.d

@@ -342,7 +342,8 @@ func void View_DeleteText(var int hndl) {
 //========================================
 // Text hinzufügen
 //========================================
-func void ViewPtr_AddText(var int ptr, var int x, var int y, var string text, var string font, var int color) {
+// Ninja: Compatibility with LeGo 2.4.0
+func void Ninja_ViewPtr_AddText(var int ptr, var int x, var int y, var string text, var string font, var int color) {
     var zCView v; v = _^(ptr);
     var int field; field = Print_TextFieldColored(x, y, text, font, Print_ToVirtual(Print_GetFontHeight(font), v.psizey), color);
     if(v.textLines_next) {
@@ -353,11 +354,11 @@ func void ViewPtr_AddText(var int ptr, var int x, var int y, var string text, va
     };
 };
 func void View_AddText(var int hndl, var int x, var int y, var string text, var string font) {
-    ViewPtr_AddText(getPtr(hndl), x, y, text, font, -1);
+    Ninja_ViewPtr_AddText(getPtr(hndl), x, y, text, font, -1);
 };
 
 func void View_AddTextColored(var int hndl, var int x, var int y, var string text, var string font, var int color) {
-    ViewPtr_AddText(getPtr(hndl), x, y, text, font, color);
+    Ninja_ViewPtr_AddText(getPtr(hndl), x, y, text, font, color);
 };
 
 //========================================

@@ -24,6 +24,21 @@ class _Button {
 // const string _BUTTON_STRUCT = "auto|10";
 
 func void _Button_Archiver(var _Button this) {
+	// Ninja: Consider mods that use older LeGo versions - they expect the old archiving!
+	if (MEM_GetSymbolIndex("LEGO_INIT") < MEM_GetSymbolIndex("_BUTTON_ARCHIVER")) {
+		PM_SaveInt("userdata", this.userdata);
+		PM_SaveInt("posx",     this.posx);
+		PM_SaveInt("posy",     this.posy);
+		PM_SaveInt("posx2",    this.posx2);
+		PM_SaveInt("posy2",    this.posy2);
+		PM_SaveInt("on_enter", this.on_enter);
+		PM_SaveInt("on_leave", this.on_leave);
+		PM_SaveInt("on_click", this.on_click);
+		PM_SaveInt("view",     this.view);
+		PM_SaveInt("state",    this.state);
+		return;
+	};
+
 	if (this.userdata)     { PM_SaveInt("userdata",    this.userdata); };
 
 	PM_SaveInt("posx",  this.posx);
