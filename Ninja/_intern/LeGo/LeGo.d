@@ -286,6 +286,17 @@ func void LeGo_Init(var int flags) {
 // Merge flags after prior initialization
 //========================================
 func int LeGo_MergeFlags(var int flags, var int legoInit, var int initialized, var int loaded) {
+    // Verify flags
+    if (flags == LeGo_All) {
+        // Forbid over-initializing
+        MEM_SendToSpy(zERR_TYPE_FATAL, // Causes termination of game
+                      "LeGo initialization invalid (LeGo_All) Please specify only the packages you actually need.");
+    } else if (flags & LeGo_Bloodsplats) {
+        // Forbid Bloodsplats, as they will remain in the mod after removing the patch
+        MEM_SendToSpy(zERR_TYPE_FATAL, // Causes termination of game
+                      "LeGo initialization invalid (LeGo_Bloodsplats) This package is not permitted.");
+    };
+
     // Check if LeGo is already used and initialized by the underlying mod
     if (legoInit == -1) {
         legoInit = _LeGo_Init; // Yes/No
