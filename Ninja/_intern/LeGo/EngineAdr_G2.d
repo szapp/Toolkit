@@ -123,6 +123,9 @@ const int zTBBox3D__Draw                            = 5529312; //0x545EE0
 const int zCOBBox3D__Draw                           = 5533040; //0x546D70
 const int zcon_address_lego							= 11221088; //0xAB3860 //zcon_address is defined in Ikarus but only for Gothic2!
 
+const int zCPar_Symbol__zCPar_Symbol                = 8001168; //0x7A1690
+const int zCPar_SymbolTable__Insert                 = 8011520; //0x7A3F00
+
 //========================================
 // Globale Flagvariable
 //========================================

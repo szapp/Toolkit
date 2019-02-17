@@ -140,6 +140,8 @@ const int zCModelAni__GetAniID                      = 6427072; // .text:006211C0
 const int zCModelAni__GetAniName                    = 5759840; // .text:0057E360
 const int zCModel__GetAniIDFromAniName              = 4713552; // .text:0047EC50
 
+const int zCPar_Symbol__zCPar_Symbol                = 7306528; //0x6F7D20
+const int zCPar_SymbolTable__Insert                 = 7316528; //0x6FA430
 
 
 //========================================

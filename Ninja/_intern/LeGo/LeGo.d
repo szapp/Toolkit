@@ -283,9 +283,61 @@ func void LeGo_Init(var int flags) {
 };
 
 //========================================
+// Dynamic symbol creation
+//========================================
+func int _CreateIntSymbol(var string name, var int constant) {
+    MEM_Info(ConcatStrings("Adding new symbol ", name));
+
+    var int symb; symb = MEM_Alloc(60); //0x3C sizeof(zCPar_Symbol)
+
+    const int call = 0;
+    if (CALL_Begin(call)) {
+        CALL__thiscall(_@(symb), zCPar_Symbol__zCPar_Symbol);
+        call = CALL_End();
+    };
+
+    var zCPar_Symbol symbol; symbol = _^(symb);
+    symbol.name = name;
+    symbol.bitfield = symbol.bitfield | (zPAR_FLAG_CONST * constant);
+    symbol.bitfield = symbol.bitfield | zPAR_TYPE_INT;
+    symbol.bitfield = symbol.bitfield | 1; // One element
+
+    var int symbTab; symbTab = ContentParserAddress + 16; //0x10
+    const int call2 = 0;
+    if (CALL_Begin(call2)) {
+        CALL_PtrParam(_@(symb));
+        CALL__thiscall(_@(symbTab), zCPar_SymbolTable__Insert);
+        call2 = CALL_End();
+    };
+    if (!CALL_RetValAsInt()) {
+        MEM_Error("Could not add symbol to symbol table.");
+    };
+
+    return symb;
+};
+func void _SetIntSymbolContent(var string name, var int constant, var int value) {
+    var int symb; symb = MEM_GetSymbol(name);
+    if (!symb) {
+        symb = _CreateIntSymbol(name, constant);
+    };
+    var zCPar_Symbol symbol; symbol = _^(symb);
+    symbol.content = value;
+};
+func int _GetIntSymbolContent(var string name, var int constant, var int default) {
+    var int symb; symb = MEM_GetSymbol(name);
+    if (!symb) {
+        _SetIntSymbolContent(name, constant, default);
+        symb = MEM_GetSymbol(name);
+    };
+    return MEM_ReadInt(symb+zCParSymbol_content_offset);
+};
+
+//========================================
 // Merge flags after prior initialization
 //========================================
-func int LeGo_MergeFlags(var int flags, var int legoInit, var int initialized, var int loaded) {
+func void LeGo_MergeFlags(var int flags) {
+    MEM_InitAll();
+
     // Verify flags
     if (flags == LeGo_All) {
         // Forbid over-initializing
@@ -296,6 +348,21 @@ func int LeGo_MergeFlags(var int flags, var int legoInit, var int initialized, v
         MEM_SendToSpy(zERR_TYPE_FATAL, // Causes termination of game
                       "LeGo initialization invalid (LeGo_Bloodsplats) This package is not permitted.");
     };
+
+    // Sort out caller and retrieve indicator variables
+    var int callerID;      callerID      = MEM_GetFuncIDByOffset(MEM_GetCallerStackPos());
+    var int callerSymbPtr; callerSymbPtr = MEM_GetSymbolByIndex(callerID);
+    if (!callerSymbPtr) {
+        MEM_Error("LeGo_MergeFlags: Could not retrieve caller function.");
+        return;
+    };
+    var string callerName;        callerName        = MEM_ReadString(callerSymbPtr);
+    var string callerLeGoInit;    callerLeGoInit    = ConcatStrings(callerName, "_LEGOINIT");
+    var string callerInitialized; callerInitialized = ConcatStrings(callerName, "_INIT");
+    var string callerLoaded;      callerLoaded      = ConcatStrings(callerName, "_LOADED");
+    var int legoInit;    legoInit    = _GetIntSymbolContent(callerLeGoInit,     TRUE, -1); // Prior initialization state
+    var int initialized; initialized = _GetIntSymbolContent(callerInitialized,  TRUE,  0); // Once per session
+    var int loaded;      loaded      = _GetIntSymbolContent(callerLoaded,      FALSE,  0); // Once per game save
 
     // Check if LeGo is already used and initialized by the underlying mod
     if (legoInit == -1) {
@@ -331,6 +398,12 @@ func int LeGo_MergeFlags(var int flags, var int legoInit, var int initialized, v
         _LeGo_Flags_Base = 0; // No LeGo flags are set by the mod
     };
 
-    // Return updated indicator
-    return legoInit;
+    // Set the indicators
+    initialized = 1;
+    loaded = 1;
+
+    // Update indicators
+    _SetIntSymbolContent(callerLeGoInit,     TRUE, legoInit);
+    _SetIntSymbolContent(callerInitialized,  TRUE, initialized);
+    _SetIntSymbolContent(callerLoaded,      FALSE, loaded);
 };
