@@ -8,15 +8,9 @@
 instance lCEvent(zCArray);
 
 func void lCEvent_Archiver(var zCArray this) {
-    // Do not exclude LeGo symbols if LeGo is not part of mod
-    var int skipThreshold; skipThreshold = Ninja_Symbols_Start;
-    if (MEM_GetSymbolIndex("LEGO_INIT") > Ninja_Symbols_Start) {
-        skipThreshold = MEM_GetSymbolIndex("LEGO_INIT");
-    };
-
     var int i; i = 0;
     while(i < this.numInArray);
-        if (MEM_ReadIntArray(this.array, i) < skipThreshold) {
+        if (!_PM_ExcludeSymbol(MEM_ReadIntArray(this.array, i))) {
             PM_SaveFuncID(ConcatStrings("handler", IntToString(i)), MEM_ReadIntArray(this.array, i));
         } else {
             var zCPar_Symbol symb; symb = _^(MEM_GetSymbolByIndex(MEM_ReadIntArray(this.array, i)));
