@@ -104,6 +104,15 @@ func string LeGo_FlagsHR(var int flags) {
 // [intern] Immer
 //========================================
 func void LeGo_InitAlways(var int f) {
+    if (f & LeGo_FrameFunctions) {
+        if (_FF_arr) {
+            MEM_ArrayClear(_FF_arr);
+        } else {
+            _FF_arr = MEM_ArrayCreate();
+        };
+        _FF_Create_Caller = 0;
+    };
+
     if (!_LeGo_Loaded) {
 		// Nur beim ersten Spielstart, sonst wird es sowieso aus dem Savegame geladen
 		if (f & LeGo_PermMem) {
