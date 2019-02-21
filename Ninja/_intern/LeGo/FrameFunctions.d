@@ -68,8 +68,7 @@ func void _FF_Create(var func function, var int delay, var int cycles, var int h
         caller = MEM_GetFuncIDByOffset(MEM_GetCallerStackPos());
     };
 
-    if (caller > Ninja_Symbols_Start)
-    || (MEM_GetFuncID(function) > Ninja_Symbols_Start) {
+    if (_PM_ExcludeSymbol(caller)) || (_PM_ExcludeSymbol(MEM_GetFuncID(function))) {
         MEM_Info(ConcatStrings("NINJA: Creating non-persistent FrameFunction from ",
                                MEM_ReadString(MEM_GetSymbolByIndex(caller))));
         var int ffPtr; ffPtr = create(FFItem@);
