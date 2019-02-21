@@ -69,8 +69,12 @@ func void _FF_Create(var func function, var int delay, var int cycles, var int h
     };
 
     if (_PM_ExcludeSymbol(caller)) || (_PM_ExcludeSymbol(MEM_GetFuncID(function))) {
-        MEM_Info(ConcatStrings("NINJA: Creating non-persistent FrameFunction from ",
-                               MEM_ReadString(MEM_GetSymbolByIndex(caller))));
+        var string msg; msg = "Creating non-persistent FrameFunction (";
+        msg = ConcatStrings(msg, MEM_ReadString(MEM_GetSymbolByIndex(MEM_GetFuncID(function))));
+        msg = ConcatStrings(msg, ") called from ");
+        msg = ConcatStrings(msg, MEM_ReadString(MEM_GetSymbolByIndex(caller)));
+        MEM_Info(msg);
+
         var int ffPtr; ffPtr = create(FFItem@);
         MEM_ArrayInsert(_FF_arr, ffPtr);
         itm = _^(ffPtr);

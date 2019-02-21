@@ -106,6 +106,7 @@ func string LeGo_FlagsHR(var int flags) {
 func void LeGo_InitAlways(var int f) {
     if (f & LeGo_FrameFunctions) {
         if (_FF_arr) {
+            MEM_Info("Resetting non-persistent FrameFunctions");
             MEM_ArrayClear(_FF_arr);
         } else {
             _FF_arr = MEM_ArrayCreate();

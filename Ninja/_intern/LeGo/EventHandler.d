@@ -14,7 +14,7 @@ func void lCEvent_Archiver(var zCArray this) {
             PM_SaveFuncID(ConcatStrings("handler", IntToString(i)), MEM_ReadIntArray(this.array, i));
         } else {
             var zCPar_Symbol symb; symb = _^(MEM_GetSymbolByIndex(MEM_ReadIntArray(this.array, i)));
-            MEM_SendToSpy(zERR_TYPE_WARN, ConcatStrings("NINJA: Skipping lCEvent entry of ", symb.name));
+            MEM_SendToSpy(zERR_TYPE_WARN, ConcatStrings("Skipping lCEvent entry of ", symb.name));
         };
         i += 1;
     end;
