@@ -131,9 +131,11 @@ func int FF_Active(var func function) {
     foreachHndl(FFItem@, _FF_Active);
     if (_FF_Symbol) {
         repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-            if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
-                _FF_Symbol = 0;
-                break;
+            if (MEM_ArrayRead(_FF_arr, i)) {
+                if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
+                    _FF_Symbol = 0;
+                    break;
+                };
             };
         end;
     };
@@ -207,9 +209,12 @@ func void FF_Remove(var func function) {
     _FF_Symbol = MEM_GetFuncPtr(function);
     foreachHndl(FFItem@, _FF_RemoveL);
     repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-        if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
-            MEM_ArrayRemoveIndex(_FF_arr, i);
-            break;
+        if (MEM_ArrayRead(_FF_arr, i)) {
+            if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
+                free(MEM_ArrayRead(_FF_arr, i), FFItem@);
+                MEM_ArrayWrite(_FF_arr, i, 0);
+                break;
+            };
         };
     end;
 };
@@ -226,8 +231,11 @@ func void FF_RemoveAll(var func function) {
     _FF_Symbol = MEM_GetFuncPtr(function);
     foreachHndl(FFItem@, _FF_RemoveAllL);
     repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-        if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
-            MEM_ArrayRemoveIndex(_FF_arr, i);
+        if (MEM_ArrayRead(_FF_arr, i)) {
+            if (MEM_ReadInt(MEM_ArrayRead(_FF_arr, i)) == _FF_Symbol) {
+                free(MEM_ArrayRead(_FF_arr, i), FFItem@);
+                MEM_ArrayWrite(_FF_arr, i, 0);
+            };
         };
     end;
 };
@@ -248,8 +256,10 @@ func void _FF_Hook() {
 
     foreachHndl(FFItem@, FrameFunctions);
     repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-        i;
-        MEM_Call(FrameFunctions_Ptr);
+        if (MEM_ArrayRead(_FF_arr, i)) {
+            i;
+            MEM_Call(FrameFunctions_Ptr);
+        };
     end;
 };
 
@@ -330,7 +340,8 @@ func void FrameFunctions_Ptr(var int idx) {
         if(itm.cycles != -1) {
             itm.cycles -= 1;
             if(itm.cycles <= 0) {
-                MEM_ArrayRemoveIndex(_FF_arr, idx);
+                free(ffPtr, FFItem@);
+                MEM_ArrayWrite(_FF_arr, idx, 0);
                 return;
             };
         };
@@ -391,7 +402,8 @@ func int _FF_RemoveLData_Ptr(var int idx)
     }
     else
     {
-        MEM_ArrayRemoveIndex(_FF_arr, idx);
+        free(MEM_ArrayRead(_FF_arr, idx), FFItem@);
+        MEM_ArrayWrite(_FF_arr, idx, 0);
         return TRUE;
     };
 };
@@ -402,8 +414,10 @@ func void FF_RemoveData(var func function, var int data)
     _FF_Symbol = MEM_GetFuncPtr(function);
     foreachHndl(FFItem@, _FF_RemoveLData);
     repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-        if (_FF_RemoveLData_Ptr(i)) {
-            break;
+        if (MEM_ArrayRead(_FF_arr, i)) {
+            if (_FF_RemoveLData_Ptr(i)) {
+                break;
+            };
         };
     end;
 };
@@ -457,8 +471,10 @@ func int FF_ActiveData(var func function, var int data)
     foreachHndl(FFItem@, _FF_ActiveData);
     if (_FF_Symbol) {
         repeat(i, MEM_ArraySize(_FF_arr)); var int i;
-            if (_FF_ActiveData_Ptr(i)) {
-                break;
+            if (MEM_ArrayRead(_FF_arr, i)) {
+                if (_FF_ActiveData_Ptr(i)) {
+                    break;
+                };
             };
         end;
     };
