@@ -1076,15 +1076,22 @@ const int ASMINT_OP_retn         = 195;  //0xC3
 const int ASMINT_OP_nop          = 144;  //0x90
 const int ASMINT_OP_jmp          = 233;  //0xE9
 const int ASMINT_OP_PushEAX      =  80;  //0x50
+const int ASMINT_OP_pushECX      =  81;  //0x51
+const int ASMINT_OP_popEAX       =  88;  //0x58
+const int ASMINT_OP_popECX       =  89;  //0x59
 const int ASMINT_OP_pusha       = 96;    //0x60 //aus LeGo geklaut
 const int ASMINT_OP_popa        = 97;    //0x61 //aus LeGo geklaut
 const int ASMINT_OP_movMemToEAX = 161;   //0xA1 //aus LeGo geklaut
+const int ASMINT_OP_movALToMem   = 162;  //0xA2
 
 /* 2 Bytes */
 const int ASMINT_OP_movEAXToMem     =  1417; //0x0589
+const int ASMINT_OP_movEAXToAL      =   138; //0x008A
+const int ASMINT_OP_movCLToEAX      =  2184; //0x0888
 const int ASMINT_OP_floatStoreToMem =  7641; //0x1DD9
 const int ASMINT_OP_addImToESP      = 50307; //0xC483
 const int ASMINT_OP_movMemToECX     =  3467; //0x0D8B
+const int ASMINT_OP_movMemToCL      =  3466; //0x0D8A
 const int ASMINT_OP_movMemToEDX     =  5515; //0x158B
 const int ASMINT_OP_movECXtoEAX     = 49547; //0xC18B  aus LeGo geklaut
 const int ASMINT_OP_movESPtoEAX     = 50315; //0xC48B  aus LeGo geklaut
@@ -2966,6 +2973,15 @@ func int MEM_GetFuncIDByOffset(var int offset) {
         MEM_Error("MEM_GetFuncIDByOffset: Offset is not in valid bounds (0 <= offset < ParserStackSize).");
         return -1;
     };
+
+    /* Handle overwritten functions correctly that immediately jump into another function, e.g. MEM_ReadInt */
+    if (MEM_ReadByte(offset + currParserStackAddress) == zPAR_TOK_JUMP) {
+        var int target; target = MEM_ReadInt(offset + currParserStackAddress + 1);
+        // Only for targets within the code stack!
+        if (target >= 0) && (target < MEM_Parser.stack_stacksize) {
+            return MEM_GetFuncIDByOffset(target);
+        };
+    };
     
     var zCArray array; array = _^(funcStartsArray);
     
@@ -3176,7 +3192,8 @@ func void MEMINT_TokenizeFunction(var int funcID, var int tokenArray, var int pa
     MEM_ArrayInsert(paramArray, param);
     
     if (tok == zPAR_TOK_RET) {
-        if (MEM_GetFuncIDByOffset(pos - currParserStackAddress) != funcID) {
+        if (MEM_GetFuncIDByOffset(pos - currParserStackAddress) != funcID)
+        || (pos >= MEM_Parser.stack_stacklast) {
             /* mark end of function */
             MEM_ArrayInsert(posArr, pos);
             MEM_ArrayInsert(tokenArray, -1);
@@ -3802,7 +3819,13 @@ func int Hlp_Is_oCMob(var int ptr) {
     /* Schreibweise so bescheuert, weil Gothic Sourcer bei || meckert. */
     return (vtbl == oCMob_vtbl)
         |  (vtbl == oCMobInter_vtbl)
+        |  (vtbl == oCMobSwitch_vtbl)
+        |  (vtbl == oCMobWheel_vtbl)
         |  (vtbl == oCMobContainer_vtbl)
+        |  (vtbl == oCMobLockable_vtbl)
+        |  (vtbl == oCMobLadder_vtbl)
+        |  (vtbl == oCMobFire_vtbl)
+        |  (vtbl == oCMobBed_vtbl)
         |  (vtbl == oCMobDoor_vtbl);
 };
 
@@ -3813,19 +3836,24 @@ func int Hlp_Is_oCMobInter(var int ptr) {
     vtbl = MEM_ReadInt (ptr);
 
     return (vtbl == oCMobInter_vtbl)
+         | (vtbl == oCMobSwitch_vtbl)
+         | (vtbl == oCMobWheel_vtbl)
          | (vtbl == oCMobContainer_vtbl)
+         | (vtbl == oCMobLockable_vtbl)
+         | (vtbl == oCMobLadder_vtbl)
+         | (vtbl == oCMobFire_vtbl)
+         | (vtbl == oCMobBed_vtbl)
          | (vtbl == oCMobDoor_vtbl);
 };
 
 func int Hlp_Is_oCMobLockable(var int ptr) {
     if (!ptr) { return 0; };
 
-    /* Gibt es Lockables die weder Türen noch Truhe sind?
-     * nutzt aber eh keiner => zu faul zum nachforschen. */
     var int vtbl;
     vtbl = MEM_ReadInt (ptr);
 
     return (vtbl == oCMobContainer_vtbl)
+         | (vtbl == oCMobLockable_vtbl)
          | (vtbl == oCMobDoor_vtbl);
 };
 
@@ -3837,6 +3865,26 @@ func int Hlp_Is_oCMobContainer(var int ptr) {
 func int Hlp_Is_oCMobDoor(var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == oCMobDoor_vtbl);
+};
+
+func int Hlp_Is_oCMobBed(var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCMobBed_vtbl);
+};
+
+func int Hlp_Is_oCMobSwitch(var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCMobSwitch_vtbl);
+};
+
+func int Hlp_Is_oCMobWheel(var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCMobWheel_vtbl);
+};
+
+func int Hlp_Is_oCMobLadder(var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCMobLadder_vtbl);
 };
 
 func int Hlp_Is_oCNpc (var int ptr) {
@@ -4968,7 +5016,42 @@ func void MEM_WriteInt_() {
     var int i;
     i = i; i = i; i = i; i = i; i = i; i = i; i = i; i = i; i = i; i = i;
 };
- 
+
+func int MEM_ReadByte_(var int addr) {
+    const int call = 0;
+    if (CALL_Begin(call)) {
+        ASM_Open(15);
+        ASM_1(ASMINT_OP_pushEAX);
+        ASM_1(ASMINT_OP_movMemToEAX); ASM_4(_@(addr));
+        ASM_2(ASMINT_OP_movEAXToAL);
+        ASM_1(ASMINT_OP_movALToMem);  ASM_4(_@(ret));
+        ASM_1(ASMINT_OP_popEAX);
+        call = CALL_End();
+    };
+
+    var int ret;
+    return +ret;
+};
+
+func void MEM_WriteByte_(var int addr, var int val) {
+    if (val & ~255) {
+        MEM_Warn("MEM_WriteByte: Val out of range! Truncating to 8 bits.");
+    };
+
+    const int call = 0;
+    if (CALL_Begin(call)) {
+        ASM_Open(18);
+        ASM_1(ASMINT_OP_pushEAX);
+        ASM_1(ASMINT_OP_pushECX);
+        ASM_1(ASMINT_OP_movMemToEAX); ASM_4(_@(addr));
+        ASM_2(ASMINT_OP_movMemToCL);  ASM_4(_@(val));
+        ASM_2(ASMINT_OP_movCLToEAX);
+        ASM_1(ASMINT_OP_popECX);
+        ASM_1(ASMINT_OP_popEAX);
+        call = CALL_End();
+    };
+};
+
 func void MEMINT_InitFasterReadWrite() {
     var MEMINT_HelperClass symb;
 
@@ -4987,6 +5070,10 @@ func void MEMINT_InitFasterReadWrite() {
         MEMINT_OfTok   (zPAR_TOK_RET);        
     
     MEM_ReplaceFunc(MEM_ReadInt,    MEM_ReadInt_);
+
+    /* More secure MEM_ReadByte/MEM_WriteByte */
+    MEM_ReplaceFunc(MEM_ReadByte,   MEM_ReadByte_);
+    MEM_ReplaceFunc(MEM_WriteByte,  MEM_WriteByte_);
         
     /* now a faster rewrite of MEM_WriteInt */
     var int id; id  = MEM_GetFuncID(MEM_WriteInt);
