@@ -15,7 +15,7 @@
 |*                         NINJA SPECIFIC VERSION                        *|
 |*                                                                       *|
 \*************************************************************************/
-const string LeGo_Version = "LeGo 2.5.1-N001"; // Ninja: DO NOT CHANGE!
+const string LeGo_Version = "LeGo 2.6.0-N001"; // Ninja: DO NOT CHANGE!
 
 const int LeGo_PrintS          = 1<<0;  // Interface.d
 const int LeGo_HookEngine      = 1<<1;  // HookEngine.d

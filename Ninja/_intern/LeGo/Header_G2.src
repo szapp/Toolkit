@@ -2,6 +2,7 @@
 // LeGo //
 //////////
 
+Misc.d
 EngineAdr_G2.d
 PermMem_ExcludeSymbol.d
 Timer.d

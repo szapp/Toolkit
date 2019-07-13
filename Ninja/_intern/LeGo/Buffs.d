@@ -10,7 +10,7 @@ class lCBuff {
 		var int targetID;  // NPC that is currently affected by this buff
 		var int durationMS; // full duration until the buff runs out 
 		var int tickMS; // ms between each tick, first tick at tickMS milliseconds.
-		var int nextTickNr; // e.g. before the first tick, this will be 1
+		var int nextTickNr; // e.g. before the first tick this will be 0; OBSOLETE, remove when possible
 
 		var int OnApply; 
 		var int OnTick;
@@ -18,21 +18,27 @@ class lCBuff {
 
 		var string buffTex; // Currently only used for buffs applied on the hero
 		// var int originID; // Who casted/created this buff?
+
+		// Internal,  no need to set during instance construction
+		var int _startedTime;
+		var int _endTime; // Not rendundant with durationMS because buffs can be refreshed
 };
 
 func void lCBuff_Archiver(var lCBuff this) {
 	// Ninja: Consider mods that use older LeGo versions - they expect the old archiving!
 	if (MEM_GetSymbolIndex("LEGO_INIT") < MEM_GetSymbolIndex("LCBUFF_ARCHIVER")) {
-		PM_SaveString("name",    this.name);
-		PM_SaveInt("bufftype",   this.bufftype);
-		PM_SaveInt("targetID",   this.targetID);
-		PM_SaveInt("durationMS", this.durationMS);
-		PM_SaveInt("tickMS",     this.tickMS);
-		PM_SaveInt("nextTickNr", this.nextTickNr);
-		PM_SaveInt("OnApply",    this.OnApply);
-		PM_SaveInt("OnTick",     this.OnTick);
-		PM_SaveInt("OnRemoved",  this.OnRemoved);
-		PM_SaveString("buffTex", this.buffTex);
+		PM_SaveString("name",      this.name);
+		PM_SaveInt("bufftype",     this.bufftype);
+		PM_SaveInt("targetID",     this.targetID);
+		PM_SaveInt("durationMS",   this.durationMS);
+		PM_SaveInt("tickMS",       this.tickMS);
+		PM_SaveInt("nextTickNr",   this.nextTickNr);
+		PM_SaveInt("OnApply",      this.OnApply);
+		PM_SaveInt("OnTick",       this.OnTick);
+		PM_SaveInt("OnRemoved",    this.OnRemoved);
+		PM_SaveString("buffTex",   this.buffTex);
+		PM_SaveInt("_startedTime", this._startedTime);
+		PM_SaveInt("_endTime",     this._endTime);
 		return;
 	};
 
@@ -42,6 +48,8 @@ func void lCBuff_Archiver(var lCBuff this) {
 	PM_SaveInt("durationMS", this.durationMS);
 	PM_SaveInt("tickMS", this.tickMS);
 	PM_SaveInt("nextTickNr", this.nextTickNr);
+	PM_SaveInt("_startedTime", this._startedTime);
+	PM_SaveInt("_endTime", this._endTime);
 
 	if (this.OnApply > 0) {
 		PM_SaveFuncID("OnApply", this.OnApply);
@@ -68,6 +76,8 @@ func void lCBuff_Unarchiver(var lCBuff this) {
 	if (PM_Exists("durationMS")) { this.durationMS = PM_Load("durationMS"); };
 	if (PM_Exists("tickMS")) { this.tickMS = PM_Load("tickMS"); };
 	if (PM_Exists("nextTickNr")) { this.nextTickNr = PM_Load("nextTickNr"); };
+	if (PM_Exists("_startedTime")) { this._startedTime = PM_Load("_startedTime"); };
+	if (PM_Exists("_endTime")) { this._endTime = PM_Load("_endTime"); };
 
 	if (PM_Exists("OnApply")) {
 		obj = _PM_SearchObj("OnApply");
@@ -114,15 +124,23 @@ func void lCBuff_Unarchiver(var lCBuff this) {
 var int bufflist_hero; // @zCArray<@lCBuff> 
 var int bufflist_views[BUFFLIST_SIZE]; // @zCView
 
+const int BUFF_Y = 7000;
+const int BUFF_HEIGHT = 500;
+
 func void Bufflist_Init() {
 	Print_GetScreenSize();
-	var int xsize; xsize = roundf(divf(mkf(500), Print_Ratio));
+	var int xsize; xsize = roundf(divf(mkf(BUFF_HEIGHT), Print_Ratio));
 	bufflist_hero = new(zCArray@);
 	var int k; var int v;
+
 	repeat(k, BUFFLIST_SIZE);
-		v = View_Create(((100+xsize)*k),7000, (100+xsize)*k+xsize, 7500);
+		v = View_Create(((100+xsize)*k), BUFF_Y, (100+xsize)*k+xsize, BUFF_Y+BUFF_HEIGHT);
 		MEM_WriteStatArr(bufflist_views, k, v);
 	end;
+
+	if (BUFF_FadeOut) {
+		FF_ApplyExtGT(_Bufflist_UpdateDurationFade, 0, -1);
+	};
 };
 
 func void Bufflist_Add(var int bh) {
@@ -139,8 +157,6 @@ func void Bufflist_Remove(var int bh) {
 	var zCArray arr; arr = get(bufflist_hero);
 	var int index; index = MEM_ArrayIndexOf(getPtr(bufflist_hero), bh);
 
-
-
 	if (arr.numInArray == 1 && index == 0) { 
 		View_Close(bufflist_views[0]); 
 	};	
@@ -155,10 +171,69 @@ func void Bufflist_Remove(var int bh) {
 	if (index == arr.numInArray) { return; };
 
 	MEM_WriteIntArray(arr.array, index, 
-			MEM_ReadIntArray(arr.array, arr.numInArray));
-
-	
+			MEM_ReadIntArray(arr.array, arr.numInArray));	
 };
+
+
+func void _Bufflist_UpdateDurationFade() {
+	var zCArray arr; arr = get(bufflist_hero);
+
+	var int viewState; // 0 = Open, 1 = Closed -- retains value through sequential invocations
+	var int changeViews; // set to true if view status should be changed (i.e. view_open/close should be called)
+
+	if (MEM_Game.showPlayerStatus == viewState) {
+		// The viewState has changed, so we open/close all views
+		viewState = !MEM_Game.showPlayerStatus;
+		changeViews = true;
+	};
+
+ 	var int k;
+ 	repeat(k, arr.numInArray);
+ 		var int bl_view; bl_view = MEM_ReadStatArr(bufflist_views, k);
+
+ 		if (changeViews) {
+ 			if (MEM_Game.showPlayerStatus) {
+ 				View_Open(bl_view);
+ 			} else {
+ 				View_Close(bl_view);
+ 			};
+ 		};
+
+ 		var lCBuff buff; buff = get(MEM_ReadIntArray(arr.array, k));
+
+ 		var int now; now = TimerGT(); 
+
+ 		var zCView view; view = get(bl_view);
+
+
+ 		var int timediff; timediff = buff._endTime-now;
+
+ 		if timediff < 0 {
+ 			timediff = 0;
+ 		};
+
+ 		var int xf; xf = fracf(timediff, buff.durationMS);
+
+ 		// If you don't like this, complain to GiftGrün
+ 		// 128 - 128/tan(1) * tan(2x-1)
+ 		var int new_alphaf; new_alphaf = addf(mkf(160), mulf(divf(mkf(128), tan(FLOATEINS)), tan(subf(mulf(mkf(2), xf), FLOATEINS))));
+ 		var int new_alpha; new_alpha = roundf(new_alphaf);
+ 		
+ 		if new_alpha < 0 {
+ 			new_alpha = 0;
+ 		} else if new_alpha > 255 {
+ 			new_alpha = 255;
+ 		};
+
+ 		View_SetColor(bl_view, RGBA(255, 255, 255, new_alpha));
+
+	end;
+
+	changeViews = false;
+};
+
+
+
 
 /* BUFF DISPLAY FOR HERO ENDS HERE */
 
@@ -189,6 +264,7 @@ func int Buff_Has(var c_npc npc, var int buff) {
 		if (Buff_BuffHndl != 0) {	
 			return Buff_BuffHndl;
 		};
+		return 0;
 };	
 
 func void _Buff_Dispatcher(var int bh) { // This is called every tick and is responsible for deleting the object 
@@ -218,6 +294,9 @@ func int Buff_Apply(var c_npc npc, var int buff) {
 		var lCBuff b; b = get(bh);
 
 		b.targetID = Npc_GetID(npc);
+
+		b._startedTime = TimerGT();
+		b._endTime = b._startedTime + b.durationMS;
 	
 		if (b.OnApply) {
 				bh;
@@ -250,6 +329,7 @@ func void Buff_Refresh(var int bh) {
 	var lcBuff b; b = get(bh);
 
 	b.nextTickNr = 1;
+	b._endTime = TimerGT() + b.durationMS;
 };
 
 
@@ -271,7 +351,7 @@ func void Buff_Remove(var int bh) {
 			MEM_CallByID(b.onRemoved);
 	};
 
-	if (b.targetID == Npc_GetID(hero)) {
+	if (b.targetID == Npc_GetID(hero) && Buffs_DisplayForHero) {
 			Bufflist_Remove(bh);
 	};
 
