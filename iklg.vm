@@ -4,7 +4,7 @@ VDFName=.\iklg.data
 
 [FILES]
 Ninja\_intern\Ikarus\* -r
-Ninja\_intern\LeGo\* -r
+Ninja\_intern\LeGo\*
 
 [EXCLUDE]
 _work\Data\Scripts\* -r
