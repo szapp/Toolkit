@@ -12,3 +12,7 @@ $bytes[$addr+2] = 0x9F;
 $bytes[$addr+3] = 0x7F;
 
 [System.IO.File]::WriteAllBytes($binfile, $bytes);
+
+$dest = Get-Content -Path outpath.txt
+remove-item "$dest\IKLG.DATA"
+move-item -path $binfile -destination $dest
