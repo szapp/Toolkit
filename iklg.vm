@@ -15,6 +15,7 @@ _work\Data\Scripts\* -r
 .gitignore
 build.ps1
 iklg.data
+outpath.txt
 
 [INCLUDE]
 
