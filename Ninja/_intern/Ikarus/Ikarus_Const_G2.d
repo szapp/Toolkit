@@ -1,3 +1,6 @@
+// Divider symbol to obtain range of possibly added Ikarus symbols parsed with Ninja
+const int _Ikarus_Ninja_Start = 0;
+
 const int GOTHIC_BASE_VERSION = 2;
 
 //--------------------------------------
