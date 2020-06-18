@@ -314,6 +314,9 @@ func void MEMINT_GetMemHelper() {
         MEM_Helper = Hlp_GetNpc (self);
         self = Hlp_GetNpc (selfBak);
     };
+
+    // Set MEM_Helper to non-persistent across saves (in this form only applicable to Ninja)
+    MEM_Helper._zCVob_bitfield[4] = MEM_Helper._zCVob_bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive;
 };
 
 //GOTHIC_BASE_VERSION == 1 ? g1Val : g2Val
