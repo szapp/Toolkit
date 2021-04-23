@@ -314,9 +314,6 @@ func void MEMINT_GetMemHelper() {
         MEM_Helper = Hlp_GetNpc (self);
         self = Hlp_GetNpc (selfBak);
     };
-
-    // Set MEM_Helper to non-persistent across saves (in this form only applicable to Ninja)
-    MEM_Helper._zCVob_bitfield[4] = MEM_Helper._zCVob_bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive;
 };
 
 //GOTHIC_BASE_VERSION == 1 ? g1Val : g2Val
@@ -2957,9 +2954,11 @@ func int MEMINT_BuildFuncStartsArray() {
         var zCPar_Symbol symb;
         symb = _^(MEM_ReadIntArray(MEM_Parser.symtab_table_array, i));
        
+        var int type; type = symb.bitfield & zCPar_Symbol_bitfield_type;
         if  (symb.bitfield & zPAR_FLAG_CONST)
         && !(symb.bitfield & zPAR_FLAG_EXTERNAL)
-        && ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_FUNC) {
+        && ((type == zPAR_TYPE_FUNC) || (type == zPAR_TYPE_INSTANCE))
+        ||  (type == zPAR_TYPE_PROTOTYPE) { // Not constant
             /* check integrity */
             if (wasSorted && lastOffset > symb.content) {
                 wasSorted = 0;
@@ -4728,7 +4727,7 @@ func int MEM_BenchmarkPC_N(var func f, var int n) {
 
 func void MEMINT_SendToSpy_Implementation(var int errorType, var string text) {
     if (errorType == zERR_TYPE_FATAL) {
-        text = ConcatStrings("  ", text);
+        text = ConcatStrings("  ", text); // No author prefix required
     } else {
         text = ConcatStrings("Q: ", text); //! = Ikarus
     };
