@@ -311,7 +311,7 @@ func void MEMINT_GetMemHelper() {
         var C_NPC selfBak;
         selfBak = Hlp_GetNpc (self);
         Wld_InsertNpc (MEM_HELPER_INST, MEM_FARFARAWAY);
-        MEM_Helper = Hlp_GetNpc (self);
+        MEM_Helper = Hlp_GetNpc (MEM_HELPER_INST);
         self = Hlp_GetNpc (selfBak);
     };
 };
@@ -3212,7 +3212,7 @@ func void MEMINT_TokenizeFunction(var int funcID, var int tokenArray, var int pa
     
     if (tok == zPAR_TOK_RET) {
         if (MEM_GetFuncIDByOffset(pos - currParserStackAddress) != funcID)
-        || (pos >= MEM_Parser.stack_stacklast) {
+        || (pos - currParserStackAddress >= MEM_Parser.stack_stacksize) {
             /* mark end of function */
             MEM_ArrayInsert(posArr, pos);
             MEM_ArrayInsert(tokenArray, -1);
@@ -3824,118 +3824,12 @@ func void MEM_InitGlobalInst() {
 };
 
 //************************************************
-// Validity checks
-//************************************************
-
-func int Hlp_Is_oCMobFire (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobFire_vtbl);
-};
-
-func int Hlp_Is_zCMover(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCMover_vtbl);
-};
-
-func int Hlp_Is_oCMob(var int ptr) {
-    if (!ptr) { return 0; };
-
-    var int vtbl;
-    vtbl = MEM_ReadInt (ptr);
-
-    /* Schreibweise so bescheuert, weil Gothic Sourcer bei || meckert. */
-    return (vtbl == oCMob_vtbl)
-        |  (vtbl == oCMobInter_vtbl)
-        |  (vtbl == oCMobSwitch_vtbl)
-        |  (vtbl == oCMobWheel_vtbl)
-        |  (vtbl == oCMobContainer_vtbl)
-        |  (vtbl == oCMobLockable_vtbl)
-        |  (vtbl == oCMobLadder_vtbl)
-        |  (vtbl == oCMobFire_vtbl)
-        |  (vtbl == oCMobBed_vtbl)
-        |  (vtbl == oCMobDoor_vtbl);
-};
-
-func int Hlp_Is_oCMobInter(var int ptr) {
-    if (!ptr) { return 0; };
-
-    var int vtbl;
-    vtbl = MEM_ReadInt (ptr);
-
-    return (vtbl == oCMobInter_vtbl)
-         | (vtbl == oCMobSwitch_vtbl)
-         | (vtbl == oCMobWheel_vtbl)
-         | (vtbl == oCMobContainer_vtbl)
-         | (vtbl == oCMobLockable_vtbl)
-         | (vtbl == oCMobLadder_vtbl)
-         | (vtbl == oCMobFire_vtbl)
-         | (vtbl == oCMobBed_vtbl)
-         | (vtbl == oCMobDoor_vtbl);
-};
-
-func int Hlp_Is_oCMobLockable(var int ptr) {
-    if (!ptr) { return 0; };
-
-    var int vtbl;
-    vtbl = MEM_ReadInt (ptr);
-
-    return (vtbl == oCMobContainer_vtbl)
-         | (vtbl == oCMobLockable_vtbl)
-         | (vtbl == oCMobDoor_vtbl);
-};
-
-func int Hlp_Is_oCMobContainer(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobContainer_vtbl);
-};
-
-func int Hlp_Is_oCMobDoor(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobDoor_vtbl);
-};
-
-func int Hlp_Is_oCMobBed(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobBed_vtbl);
-};
-
-func int Hlp_Is_oCMobSwitch(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobSwitch_vtbl);
-};
-
-func int Hlp_Is_oCMobWheel(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobWheel_vtbl);
-};
-
-func int Hlp_Is_oCMobLadder(var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCMobLadder_vtbl);
-};
-
-func int Hlp_Is_oCNpc (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNpc_vtbl);
-};
-
-func int Hlp_Is_oCItem (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCItem_vtbl);
-};
-
-func int Hlp_Is_zCVobLight (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCVobLight_vtbl);
-};
-
-//************************************************
 //   Find zCClassDef
 //************************************************
 
 func int MEM_GetClassDef (var int objPtr) {
     if (!objPtr) {
-        MEM_Error ("MEMINT_GetClassDef: ObjPtr == 0.");
+        MEM_Error ("MEM_GetClassDef: ObjPtr == 0");
         return 0;
     };
     
@@ -3945,8 +3839,18 @@ func int MEM_GetClassDef (var int objPtr) {
     //obj._vtbl[0] contains the address of a virtual function that returns
     //the classDef of the class of the object.
     //This function contains of a single "mov" command (1 byte) that is followed by the address that is of interest here.
-    
-    return MEM_ReadInt (1 + MEM_ReadInt (MEM_ReadInt (objPtr)));
+
+    //return MEM_ReadInt (1 + MEM_ReadInt (MEM_ReadInt (objPtr)));
+    var int addr; addr = MEM_ReadInt(objPtr);
+    if (addr) {
+        addr = MEM_ReadInt(addr);
+        if (addr) {
+            return MEM_ReadInt(1 + addr);
+        };
+    };
+
+    MEM_Error("MEM_GetClassDef: ObjPtr not a valid object");
+    return 0;
 };
 
 func string MEM_GetClassName (var int objPtr) {
@@ -3957,6 +3861,82 @@ func string MEM_GetClassName (var int objPtr) {
         return MEM_ReadString (classDef); //gleich die erste Eigenschaft / first property of zCClassDef.
     };
     return "";
+};
+
+func int MEM_CheckInheritance(var int objPtr, var int classDef) {
+    if (!objPtr) || (!classDef) {
+        return 0;
+    };
+
+    var int curClassDef; curClassDef = MEM_GetClassDef(objPtr);
+
+    // Iterate over base classes
+    while(curClassDef && curClassDef != classDef);
+        var zCClassDef cD; cD = _^(curClassDef);
+        curClassDef = cD.baseClassDef;
+    end;
+
+    return (curClassDef == classDef);
+};
+
+//************************************************
+// Validity checks
+//************************************************
+
+func int Hlp_Is_oCMobFire(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobFire_classDef);
+};
+
+func int Hlp_Is_zCMover(var int ptr) {
+    return MEM_CheckInheritance(ptr, zCMover_classDef);
+};
+
+func int Hlp_Is_oCMob(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMOB_classDef);
+};
+
+func int Hlp_Is_oCMobInter(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobInter_classDef);
+};
+
+func int Hlp_Is_oCMobLockable(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobLockable_classDef);
+};
+
+func int Hlp_Is_oCMobContainer(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobContainer_classDef);
+};
+
+func int Hlp_Is_oCMobDoor(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobDoor_classDef);
+};
+
+func int Hlp_Is_oCMobBed(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobBed_classDef);
+};
+
+func int Hlp_Is_oCMobSwitch(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobSwitch_classDef);
+};
+
+func int Hlp_Is_oCMobWheel(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobWheel_classDef);
+};
+
+func int Hlp_Is_oCMobLadder(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCMobLadder_classDef);
+};
+
+func int Hlp_Is_oCNpc(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCNpc_classDef);
+};
+
+func int Hlp_Is_oCItem(var int ptr) {
+    return MEM_CheckInheritance(ptr, oCItem_classDef);
+};
+
+func int Hlp_Is_zCVobLight(var int ptr) {
+    return MEM_CheckInheritance(ptr, zCVobLight_classDef);
 };
 
 //************************************************
@@ -4159,7 +4139,6 @@ func void MEM_TriggerVob (var int vobPtr) {
     const int zCEventManager_OnTrigger_G1 = 7202656; //0x6DE760
     const int zCEventManager_OnTrigger_G2 = 7895536; //0x7879F0
     
-    var zCVob vob; vob = _^(vobPtr);
     var int eventMan; eventMan = MEMINT_VobGetEM(vobPtr);
     
     const int call = 0;
@@ -4183,7 +4162,6 @@ func void MEM_UntriggerVob (var int vobPtr) {
     const int zCEventManager_OnUnTrigger_G1 = 7202848; //6DE820
     const int zCEventManager_OnUnTrigger_G2 = 7895728; //787AB0
     
-    var zCVob vob; vob = _^(vobPtr);
     var int eventMan; eventMan = MEMINT_VobGetEM(vobPtr);
     
     const int call = 0;
@@ -4742,9 +4720,15 @@ func void MEMINT_SendToSpy_Implementation(var int errorType, var string text) {
         if (GOTHIC_BASE_VERSION == 1) {
             /* There is a warning "lost focus",
              * that will be printed constantly, unless
-             * I reduce its priority here */
-            MemoryProtectionOverride(/*0x4F55C2*/ 5199298, 1);
-            MEM_WriteByte(5199298, 1);
+             * I reduce its priority here.
+             * To avoid a crash, remove it entirely */
+            const int WndProc_FocusWarn = 5199312; //0x4F55D0
+            MemoryProtectionOverride(WndProc_FocusWarn, 5);
+            MEM_WriteByte(WndProc_FocusWarn+0, /*83*/ 131); // esp
+            MEM_WriteByte(WndProc_FocusWarn+1, /*C4*/ 196); // add
+            MEM_WriteByte(WndProc_FocusWarn+2, 8*4);        // 0x20
+            MEM_WriteByte(WndProc_FocusWarn+3, ASMINT_OP_nop);
+            MEM_WriteByte(WndProc_FocusWarn+4, ASMINT_OP_nop);
         };
     
         zerr.ack_type = zERR_TYPE_WARN;

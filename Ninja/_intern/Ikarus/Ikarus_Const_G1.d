@@ -148,14 +148,17 @@ const int oCAIHuman_vtbl   				 = 8243220;
 //const int zCVisual_vtbl   			 = ?
 const int zCModel_vtbl   				 = 8208364;
 const int oCNpcTalent_vtbl   			 = 8249116;
-const int zCRoute_vtbl   				 = 8252184;
+const int zCRoute_vtbl   				 = 8252208; //0x7DEB30
 const int oCMobLadder_vtbl    			 = 8247188;	
 const int oCInfoMenager_vtbl   			 = 6705872;	
 const int zString_vtbl   				 = 8193768;	
+const int zCZoneZFogDefault_vtbl		 = 8241804;	//0x7DC28C
 const int zCZoneSound_vtbl 				 = 8243052;	
 const int zCZoneMusicDefault_vtbl		 = 8252620;	
-const int zCZoneMusic_vtbl				 = 8252476;	
-const int zCCSManager_vtbl				 = 8194068;	
+const int zCZoneMusic_vtbl				 = 8242628; //0x7DC5C4
+const int oCZoneMusic_vtbl				 = 8252476; //0x7DEC3C
+const int zCCSManager_vtbl				 = 8195652; //0x7D0E44
+const int oCCSManager_vtbl				 = 8194068; //0x7D0814
 const int zCAICamera_vtbl				 = 8201664;	
 const int zCVob_vtbl				 	 = 8238156;
 const int oCGameInfo_vtbl			 	 = 8196140;	
@@ -166,15 +169,31 @@ const int zCMesh_vtbl			 	 	 = 8208236;
 const int oCFreepoint_vtbl			  	 = 8252220;
 const int oCLensFlare_vtbl			  	 = 8240412;
 const int zCVobSound_vtbl			  	 = 8243052;
-//const int oCWaypoint_vtbl			  	 = ?
+const int oCWaypoint_vtbl			  	 = 8252184; //0x7DEB18
 const int zCVobLight_vtbl			  	 = 8238388;
 const int oCTriggerScript_vtbl		  	 = 8196940;
 const int oCMobWheel_vtbl            	 = 8246908;
 const int zCZoneSoundDaytime_vtbl 		 = 8242900;	
 const int oCTriggerChangeLevel_vtbl		 = 8196812;
-const int zCDecal_vtbl					 = 8241804;
+const int zCDecal_vtbl					 = 8207876; //0x7D3E04
 const int oCMeshSoftSkin_vtbl			 = 8209812;
 const int oCModelAni_vtbl				 = 8208660;
+
+// ClassDef addresses
+const int oCMobFire_classDef             = 9285024; //0x8DADA0
+const int zCMover_classDef               = 9271400; //0x8D7868
+const int oCMOB_classDef                 = 9285840; //0x8DB0D0
+const int oCMobInter_classDef            = 9285728; //0x8DB060
+const int oCMobLockable_classDef         = 9284784; //0x8DACB0
+const int oCMobContainer_classDef        = 9285504; //0x8DAF80
+const int oCMobDoor_classDef             = 9284672; //0x8DAC40
+const int oCMobBed_classDef              = 9284552; //0x8DABC8
+const int oCMobSwitch_classDef           = 9285280; //0x8DAEA0
+const int oCMobWheel_classDef            = 9284440; //0x8DAB58
+const int oCMobLadder_classDef           = 9285392; //0x8DAF10
+const int oCNpc_classDef                 = 9286664; //0x8DB408
+const int oCItem_classDef                = 9284224; //0x8DAA80
+const int zCVobLight_classDef            = 9270800; //0x8D7610
 
 //--------------------------------------
 // Tasten
