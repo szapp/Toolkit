@@ -1,3 +1,4 @@
+Ikarus_start.d
 Ikarus_Const_G2.d
 EngineClasses_G2\Misc.d
 EngineClasses_G2\oCAiHuman.d
@@ -21,3 +22,4 @@ EngineClasses_G2\zCWorld.d
 EngineClasses_G2\zCZoneZFog.d
 Ikarus.d
 float.d
+Ikarus_end.d
