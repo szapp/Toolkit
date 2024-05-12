@@ -1,7 +1,7 @@
 [BEGINVDF]
 Comment=Modified versions of the latest Ikarus and LeGo.%%NThese scripts are not loaded by default - only if a patch needs them.%%N%%N===       DO NOT USE THESE SCRIPTS       ===%%N=== They are specifically tailored to Ninja ===
 BaseDir=.\
-VDFName=.\iklg.data
+VDFName=.\IKLG.DATA
 
 [FILES]
 Ninja\_intern\Ikarus\* -r
@@ -10,8 +10,9 @@ Ninja\_intern\Ikarus_*.d
 Ninja\_intern\Ikarus_*.src
 
 [EXCLUDE]
-.github\* -r
-.gitignore
+.git -r
+.github -r
+.gitignore -r
 *.vm
 *.vdf
 build.ps1

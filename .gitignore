@@ -1,3 +1,4 @@
 *.vdf
 *.data
+*.DATA
 /outpath.txt
