@@ -1,0 +1,8 @@
+[submodule "ikarus"]
+	path = Ninja/_intern/Ikarus
+	url = https://github.com/Lehona/Ikarus
+	branch = gameversions
+[submodule "lego"]
+	path = Ninja/_intern/LeGo
+	url = https://github.com/szapp/NinjaLeGo
+	branch = ninja

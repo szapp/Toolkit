@@ -1,6 +1,6 @@
 $srcfile = Resolve-Path "IKLG.VM"
 
-& "C:\Games\Gothic2\_work\Tools\VDFS\GothicVDFS.exe" -b $srcfile | Out-Null
+& "GothicVDFS.exe" -b $srcfile | Out-Null
 
 $binfile = Resolve-Path "IKLG.DATA"
 

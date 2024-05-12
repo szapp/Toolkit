@@ -1,0 +1,34 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vdfsbuilder:
+    name: Create VDF
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.NINJA_LEGO_TOKEN }}
+          persist-credentials: false
+
+      - name: Build VDF
+        uses: kirides/vdfsbuilder@aaf901f0c98245af54102a1946d8be0e2e17ba36
+        with:
+          in: IKLG.VM
+          out: IKLG.DATA
+          ts: '2039-12-31 23:59:58'
+
+      - name: Upload artifacts
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: IKLG.DATA
+          path: IKLG.DATA
+          overwrite: true

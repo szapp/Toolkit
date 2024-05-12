@@ -6,16 +6,18 @@ VDFName=.\iklg.data
 [FILES]
 Ninja\_intern\Ikarus\* -r
 Ninja\_intern\LeGo\*
+Ninja\_intern\Ikarus_*.d
+Ninja\_intern\Ikarus_*.src
 
 [EXCLUDE]
-_work\Data\Scripts\* -r
+.github\* -r
+.gitignore
 *.vm
 *.vdf
-*.bat
-.gitignore
 build.ps1
 iklg.data
 outpath.txt
+README.md
 
 [INCLUDE]
 
