@@ -21,7 +21,7 @@ jobs:
       - name: Build VDF
         uses: kirides/vdfsbuilder@aaf901f0c98245af54102a1946d8be0e2e17ba36
         with:
-          in: IKLG.VM
+          in: iklg.vm
           out: IKLG.DATA
           ts: '2039-12-31 23:59:58'
 
