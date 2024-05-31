@@ -1,8 +1,8 @@
-$srcfile = Resolve-Path "IKLG.VM"
+$srcfile = Resolve-Path "iklg.vm"
 
 & "GothicVDFS.exe" -b $srcfile | Out-Null
 
-$binfile = Resolve-Path "IKLG.DATA"
+$binfile = Resolve-Path "iklg.data"
 
 $addr = 0x118
 $bytes = [System.IO.File]::ReadAllBytes($binfile);
@@ -14,5 +14,5 @@ $bytes[$addr+3] = 0x7F;
 [System.IO.File]::WriteAllBytes($binfile, $bytes);
 
 $dest = Get-Content -Path outpath.txt
-remove-item "$dest\IKLG.DATA"
+remove-item "$dest\iklg.data"
 move-item -path $binfile -destination $dest
