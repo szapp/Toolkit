@@ -1,0 +1,8 @@
+# This file excludes bot authors from the automatically generated release notes
+# For more information, visit https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes#configuring-automatically-generated-release-notes
+
+changelog:
+  exclude:
+    authors:
+      - dependabot
+      - github-actions

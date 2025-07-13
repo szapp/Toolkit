@@ -1,7 +1,23 @@
 name: build
 
 on:
+  push:
+    tags:
+      - "[Vv]?[0-9]+.[0-9]+*"
+  release:
+    types: [published]
   workflow_dispatch:
+
+# To auto-deploy to the Steam workshop on new tag/release
+#  (1) the secrets 'STEAM_USERNAME' and 'STEAM_CONFIG_VDF'
+#      need to exist in the repository, following these instructions:
+#      https://github.com/m00nl1ght-dev/steam-workshop-deploy#configvdf
+#  (2) the patch must already exist on the Steam workshop
+#  (3) the workshop item IDs must be added below (one or both)
+# Leaving the variables empty, will skip the deployment steps
+env:
+  STEAM_WORKSHOP_G1:
+  STEAM_WORKSHOP_G2:
 
 permissions:
   contents: write
@@ -11,6 +27,15 @@ jobs:
     name: Create VDF
     runs-on: ubuntu-latest
     steps:
+      - name: Get patch name from repository name
+        run: |
+          echo "PATCH_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Get short SHA
+        if: (!startsWith(github.ref, 'refs/tags/'))
+        run: echo "VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -21,14 +46,59 @@ jobs:
       - name: Build VDF
         uses: kirides/vdfsbuilder@aaf901f0c98245af54102a1946d8be0e2e17ba36
         with:
-          in: iklg.vm
-          out: iklg.data
+          in: ${{ env.PATCH_NAME }}.vm
           ts: '2039-12-31 23:59:58'
+
+      - name: Create release with assets (if tag pushed)
+        if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'release'
+        run: gh release create ${{ env.VERSION }} --generate-notes "${{ env.PATCH_NAME }}.vdf" || exit 0
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Upload release assets (if release published)
+        if: github.event_name == 'release'
+        run: gh release upload ${{ env.VERSION }} "${{ env.PATCH_NAME }}.vdf" || exit 0
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Prepare Steam workshop upload
+        if: (startsWith(github.ref, 'refs/tags/') || github.event_name == 'release') && (env.STEAM_WORKSHOP_G1 != '' || env.STEAM_WORKSHOP_G2 != '')
+        run: |
+          mkdir -p content/Data
+          cp *.vdf content/Data/
+
+      - name: Update in Gothic 1 Steam workshop
+        if: (startsWith(github.ref, 'refs/tags/') || github.event_name == 'release') && env.STEAM_WORKSHOP_G1 != ''
+        uses: m00nl1ght-dev/steam-workshop-deploy@v3
+        with:
+          username: ${{ secrets.STEAM_USERNAME }}
+          configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+          path: content
+          appId: 65540
+          publishedFileId: ${{ env.STEAM_WORKSHOP_G1 }}
+          changeNote: |
+            Version ${{ env.VERSION }}
+
+            Release notes: https://github.com/${{ github.repository }}/releases/tag/${{ env.VERSION }}
+
+      - name: Update in Gothic 2 Steam workshop
+        if: (startsWith(github.ref, 'refs/tags/') || github.event_name == 'release') && env.STEAM_WORKSHOP_G2 != ''
+        uses: m00nl1ght-dev/steam-workshop-deploy@v3
+        with:
+          username: ${{ secrets.STEAM_USERNAME }}
+          configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+          path: content
+          appId: 39510
+          publishedFileId: ${{ env.STEAM_WORKSHOP_G2 }}
+          changeNote: |
+            Version ${{ env.VERSION }}
+
+            Release notes: https://github.com/${{ github.repository }}/releases/tag/${{ env.VERSION }}
 
       - name: Upload artifacts
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: iklg.data
-          path: iklg.data
+          name: ${{ env.PATCH_NAME }}-${{ env.VERSION }}
+          path: "${{ env.PATCH_NAME }}.vdf"
           overwrite: true

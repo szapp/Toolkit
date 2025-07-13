@@ -1,0 +1,30 @@
+name: scripts
+
+# Trigger workflow on push events with changes in SRC or D files
+on:
+  push:
+    paths:
+      - "Ninja/**/*.src"
+      - "Ninja/**/*.SRC"
+      - "Ninja/**/*.d"
+      - "Ninja/**/*.D"
+  workflow_dispatch:
+
+# These permissions are necessary for creating the check runs
+permissions:
+  checks: write
+  contents: read
+
+# The checkout action needs to be run first
+jobs:
+  parsiphae:
+    name: Run Parsiphae
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check scripts
+        uses: szapp/parsiphae-action@v1
+        with:
+          # Adjust these if changing the directory in the repository
+          # For more information on the configuration, visit https://github.com/szapp/parsiphae-action/#configuration
+          file: Ninja/*/*.src

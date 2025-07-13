@@ -1,0 +1,10 @@
+# This file is keeps the GitHub Actions up-to-date
+# For more information, visit https://docs.github.com/en/code-security/dependabot
+version: 2
+updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  ignore:
+    - dependency-name: "kirides/vdfsbuilder" # Using commit-hash is not supported
