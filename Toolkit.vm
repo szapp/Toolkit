@@ -1,5 +1,5 @@
 [BEGINVDF]
-Comment=Common tools and modified utilities for modular mods of Gothic, Gothic Sequel, Gothic 2 and Gothic 2 NotR%%NScripts are only parsed if a mod needs them.%%N%%N=== DO NOT USE OUTSIDE OF THIS MOD ===%%N=== Contents specifically tailored to Ninja ===
+Comment=Common tools and modified dependencies for modular mods of Gothic, Gothic Sequel, Gothic 2 and Gothic 2 NotR%%NScripts are only parsed if a mod needs them.%%N%%N=== DO NOT USE OUTSIDE OF THIS MOD ===%%N=== Contents specifically tailored to Ninja ===
 BaseDir=.\
 VDFName=.\Toolkit.vdf
 

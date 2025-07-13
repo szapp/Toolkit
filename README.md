@@ -10,7 +10,7 @@
 [![Steam Gothic 1](https://img.shields.io/badge/steam-Gothic%201-2a3f5a?logo=steam&labelColor=1b2838)](https://steamcommunity.com/sharedfiles/filedetails/?id=3524697500)
 [![Steam Gothic 2](https://img.shields.io/badge/steam-Gothic%202-2a3f5a?logo=steam&labelColor=1b2838)](https://steamcommunity.com/sharedfiles/filedetails/?id=3524696788)
 
-Common tools and modified utilities for modular mods for Gothic, Gothic Sequel, Gothic 2 and Gothic 2 NotR
+Common tools and modified dependencies for modular mods for Gothic, Gothic Sequel, Gothic 2 and Gothic 2 NotR
 
 Content of this mod serves as basis for other modular mods and contains modified versions of common libraries.
 Content is subject to be extended in the future and not limited to Daedalus scripts.
