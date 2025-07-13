@@ -1,0 +1,32 @@
+name: validation
+
+# Trigger workflow on push events with changes in SRC or D files
+on:
+  push:
+    paths:
+      - "Ninja/**/*.src"
+      - "Ninja/**/*.SRC"
+      - "Ninja/**/*.d"
+      - "Ninja/**/*.D"
+      - "_work/Data/**/*"
+  workflow_dispatch:
+
+# These permissions are necessary for creating the check runs
+permissions:
+  checks: write
+  contents: read
+
+# The checkout action needs to be run first
+jobs:
+  patch-validator:
+    name: Run patch validator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for validity
+        uses: szapp/patch-validator@v1
+        with:
+          # Adjust these if changing the patch name or its root directory in the repository
+          # For more information on the configuration, visit https://github.com/szapp/patch-validator/#configuration
+          patchName:
+          rootPath:

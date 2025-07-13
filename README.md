@@ -1,6 +1,7 @@
 # Toolkit
 
 [![Scripts](https://github.com/szapp/Toolkit/actions/workflows/scripts.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/scripts.yml)
+[![Validation](https://github.com/szapp/Toolkit/actions/workflows/validation.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/validation.yml)
 [![Build](https://github.com/szapp/Toolkit/actions/workflows/build.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/build.yml)
 [![GitHub release](https://img.shields.io/github/v/release/szapp/Toolkit.svg)](https://github.com/szapp/Toolkit/releases/latest)
 [![Support on Ko-fi](https://img.shields.io/badge/ko--fi-support-ff586e?logo=kofi&logoColor=white)](https://ko-fi.com/szapp)  

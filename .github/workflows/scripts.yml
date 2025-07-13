@@ -22,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.NINJA_LEGO_TOKEN }}
+          persist-credentials: false
       - name: Check scripts
         uses: szapp/parsiphae-action@v1
         with:
