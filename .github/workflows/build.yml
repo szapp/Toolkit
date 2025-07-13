@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          token: ${{ secrets.NINJA_LEGO_TOKEN }}
+          token: ${{ secrets.TOOLKIT_SUBMODULES }}
           persist-credentials: false
 
       - name: Build VDF
