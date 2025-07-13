@@ -5,8 +5,8 @@
 [![Build](https://github.com/szapp/Toolkit/actions/workflows/build.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/build.yml)
 [![GitHub release](https://img.shields.io/github/v/release/szapp/Toolkit.svg)](https://github.com/szapp/Toolkit/releases/latest)
 [![Support on Ko-fi](https://img.shields.io/badge/ko--fi-support-ff586e?logo=kofi&logoColor=white)](https://ko-fi.com/szapp)  
-<!-- [![World of Gothic](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/wog.svg)](https://www.worldofgothic.de/dl/download_XXXX.htm) -->
-<!-- [![Spine](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/spine.svg)](https://clockwork-origins.com/spine) -->
+[![World of Gothic](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/wog.svg)](https://forum.worldofplayers.de/forum/threads/1632399)
+[![Spine](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/spine.svg)](https://clockwork-origins.com/spine)
 [![Steam Gothic 1](https://img.shields.io/badge/steam-Gothic%201-2a3f5a?logo=steam&labelColor=1b2838)](https://steamcommunity.com/sharedfiles/filedetails/?id=3524697500)
 [![Steam Gothic 2](https://img.shields.io/badge/steam-Gothic%202-2a3f5a?logo=steam&labelColor=1b2838)](https://steamcommunity.com/sharedfiles/filedetails/?id=3524696788)
 
@@ -35,8 +35,8 @@ It supports <kbd>Gothic 1</kbd>, <kbd>Gothic Sequel</kbd>, <kbd>Gothic II (Class
 
 The patch is also available on
 
-<!-- - [World of Gothic](https://www.worldofgothic.de/dl/download_XXXX.htm) | [Forum thread](https://forum.worldofplayers.de/forum/threads/XXXXXXX) -->
-<!-- - [Spine Mod-Manager](https://clockwork-origins.com/spine/) -->
+- World of Gothic [forum thread](https://forum.worldofplayers.de/forum/threads/1632399)
+- [Spine Mod-Manager](https://clockwork-origins.com/spine/)
 - [Steam Workshop Gothic 1](https://steamcommunity.com/sharedfiles/filedetails/?id=3524697500)
 - [Steam Workshop Gothic 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3524696788)
 
