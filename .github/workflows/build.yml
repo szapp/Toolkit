@@ -16,8 +16,8 @@ on:
 #  (3) the workshop item IDs must be added below (one or both)
 # Leaving the variables empty, will skip the deployment steps
 env:
-  STEAM_WORKSHOP_G1:
-  STEAM_WORKSHOP_G2:
+  STEAM_WORKSHOP_G1: 3524697500
+  STEAM_WORKSHOP_G2: 3524696788
 
 permissions:
   contents: write
