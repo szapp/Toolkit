@@ -1,9 +1,9 @@
 # Toolkit
 
 [![Scripts](https://github.com/szapp/Toolkit/actions/workflows/scripts.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/scripts.yml)
-[![Validation](https://github.com/szapp/Toolkit/actions/workflows/validation.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/validation.yml)
 [![Build](https://github.com/szapp/Toolkit/actions/workflows/build.yml/badge.svg)](https://github.com/szapp/Toolkit/actions/workflows/build.yml)
-[![GitHub release](https://img.shields.io/github/v/release/szapp/Toolkit.svg)](https://github.com/szapp/Toolkit/releases/latest)  
+[![GitHub release](https://img.shields.io/github/v/release/szapp/Toolkit.svg)](https://github.com/szapp/Toolkit/releases/latest)
+[![Support on Ko-fi](https://img.shields.io/badge/ko--fi-support-ff586e?logo=kofi&logoColor=white)](https://ko-fi.com/szapp)  
 <!-- [![World of Gothic](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/wog.svg)](https://www.worldofgothic.de/dl/download_XXXX.htm) -->
 <!-- [![Spine](https://raw.githubusercontent.com/szapp/patch-template/main/.github/actions/initialization/badges/spine.svg)](https://clockwork-origins.com/spine) -->
 <!-- [![Steam Gothic 1](https://img.shields.io/badge/steam-Gothic%201-2a3f5a?logo=steam&labelColor=1b2838)](https://steamcommunity.com/sharedfiles/filedetails/?id=XXXXXXXXXX) -->
