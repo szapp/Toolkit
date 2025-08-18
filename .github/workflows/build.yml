@@ -37,7 +37,7 @@ jobs:
         run: echo "VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
           token: ${{ secrets.TOOLKIT_SUBMODULES }}
